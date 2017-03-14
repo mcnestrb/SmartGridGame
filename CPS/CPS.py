@@ -2,6 +2,7 @@ import sys
 from twisted.python import log
 from twisted.internet import reactor
 from twisted.internet.protocol import ServerFactory, ClientFactory, Protocol
+from EnumCPS import CPSState
 
 PORT = 9000
 

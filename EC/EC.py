@@ -3,6 +3,8 @@ from twisted.python import log
 from twisted.internet import reactor
 from twisted.internet.protocol import ClientFactory, Protocol
 
+from EnumEC import ECState
+
 HOST = 'localhost'
 PORT = 9000
 
