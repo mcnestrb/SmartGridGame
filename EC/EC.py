@@ -3,43 +3,39 @@ from twisted.python import log
 from twisted.internet import reactor
 from twisted.internet.protocol import ClientFactory, Protocol
 
-from EnumEC import ECState
+from EnumEC import ECState as state
 
 HOST = 'localhost'
 PORT = 9000
 
 class EC(Protocol):
+    def __init__(self, factory):
+        self.factory = factory
+
     def connectionMade(self):
-        data = input('\nType a message to send to the CPS\n')
-        if (data == 'q'):
-            self.transport.loseConnection
-        else:
-            self.transport.write(data.encode())
-            log.msg('Data sent {}'.format(data))
+        self.factory.state = state.IDLE
 
     def dataReceived(self, data):
-        log.msg('Data received {}'.format(data))
-        if( data == b'close'):
-            log.msg('Closing')
-            self.transport.loseConnection()
-        else:
-            data = input('\nType a message to send to the CPS\n')
-            if (data == 'q'):
-                self.transport.loseConnection
-            else:
-                self.transport.write(data.encode())
-                log.msg('Data sent {}'.format(data))
+        if (self.factory.state == state.IDLE):
+        elif (self.factory.state == state.DEMAND):
+        elif (self.factory.state == state.SUPPLY):
+        elif (self.factory.state == state.EST_1):
+        elif (self.factory.state == state.EST_2):
 
     def connectionLost(self, reason):
         log.msg('Lost connection because {}'.format(reason))
 
 class ECFactory(ClientFactory):
+    def __init__(self, energy):
+        self.energy = energy
+        self.state = ECState.NOT_CONNECTED
+
     def startedConnecting(self, connector):
         log.msg('Started to connect...')
 
     def buildProtocol(self, addr):
         log.msg('Connected')
-        return EC()
+        return EC(self)
 
     def ECConnectionLost(self, connector, reason):
         log.msg('Lost connection because: {}'.format(reason))
@@ -47,9 +43,11 @@ class ECFactory(ClientFactory):
     def ECConnectionFailed(self, connector, reason):
         log.msg('Connection failed because {}'.format(reason))
 
-log.startLogging(sys.stdout)
-log.msg("Running Client")
-factory = ECFactory()
-reactor.connectTCP(HOST, PORT, factory)
+if __name__ == '__main__':
+    energy = sys.argv[1]
+    log.startLogging(sys.stdout)
+    log.msg("Running Client")
+    factory = ECFactory(energy)
+    reactor.connectTCP(HOST, PORT, factory)
 
-reactor.run()
+    reactor.run()

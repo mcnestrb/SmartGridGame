@@ -1,6 +1,7 @@
 from enum import Enum
 
 class ECState(Enum):
+    NOT_CONNECTED = 0
     IDLE = 1
     DEMAND = 2
     SUPPLY = 3
