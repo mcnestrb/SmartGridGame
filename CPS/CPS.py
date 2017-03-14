@@ -3,6 +3,7 @@ from twisted.python import log
 from twisted.internet import reactor
 from twisted.internet.protocol import ServerFactory, ClientFactory, Protocol
 from EnumCPS import CPSState as state
+import CPSFSM as FSM
 
 
 PORT = 9000
@@ -10,6 +11,7 @@ PORT = 9000
 class CPS(Protocol):
     def __init__(self, factory):
         self.factory = factory
+        self.FSM = FSM(self)
 
     def connectionMade(self):
         peer = self.transport.getPeer()
@@ -19,6 +21,7 @@ class CPS(Protocol):
 
     def dataReceived(self, data):
         if (self.factory.state == state.IDLE):
+            self.FSM.
         elif (self.factory.state == state.START):
         elif (self.factory.state == state.INIT):
         elif (self.factory.state == state.OPT):

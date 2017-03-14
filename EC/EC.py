@@ -4,6 +4,7 @@ from twisted.internet import reactor
 from twisted.internet.protocol import ClientFactory, Protocol
 
 from EnumEC import ECState as state
+import ECFSM as FSM
 
 HOST = 'localhost'
 PORT = 9000
@@ -11,6 +12,7 @@ PORT = 9000
 class EC(Protocol):
     def __init__(self, factory):
         self.factory = factory
+        self.FSM = FSM(self)
 
     def connectionMade(self):
         self.factory.state = state.IDLE
@@ -21,6 +23,7 @@ class EC(Protocol):
         elif (self.factory.state == state.SUPPLY):
         elif (self.factory.state == state.EST_1):
         elif (self.factory.state == state.EST_2):
+        elif (self.factory.state == state.RECEIVE):
 
     def connectionLost(self, reason):
         log.msg('Lost connection because {}'.format(reason))

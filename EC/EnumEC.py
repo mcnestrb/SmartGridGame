@@ -7,3 +7,4 @@ class ECState(Enum):
     SUPPLY = 3
     EST_1 = 4
     EST_2 = 5
+    RECEIVE = 6
