@@ -11,4 +11,4 @@ class CPSFactory(ServerFactory):
         self.bidders = {}
 
     def buildProtocol(self, addr):
-        return CPS(self)
+        return CPSProtocol(self)
