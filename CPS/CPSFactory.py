@@ -6,10 +6,10 @@ from twisted.internet.protocol import ServerFactory
 class CPSFactory(ServerFactory):
     def __init__(self):
         self.state = state.IDLE
-        self.ECs = []
+        self.ECs = {}
         self.suppliers = {}
         self.bidders = {}
-        self.absent = []
+        self.absent = {}
 
     def buildProtocol(self, addr):
         return CPSProtocol(self)

@@ -11,10 +11,11 @@ class ECProtocol(Protocol):
 
     def connectionMade(self):
         self.factory.state = state.IDLE
-        self.FSM.idleState(int(self.factory.energy))
 
     def dataReceived(self, data):
-        if (self.factory.state == state.DEMAND):
+        if (self.factory.state == state.IDLE):
+            self.FSM.idleState(data)
+        elif (self.factory.state == state.DEMAND):
             self.FSM.demandState()
         elif (self.factory.state == state.SUPPLY):
             self.FSM.supplyState()

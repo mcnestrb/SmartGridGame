@@ -5,18 +5,26 @@ class ECFSM():
     def __init__(self, protocol):
         self.protocol = protocol
 
-    def idleState(self, energy):
+    def idleState(self, data):
+        if ('Timeslot' in str(data)):
+            log.msg('Moving from IDLE to START')
+            self.protocol.factory.state = state.START
+            self.startState(data)
+
+    def startState(self, data):
+        string = 'What\'s your energy for %s\n' % (data.decode())
+        energy = int(input(string))
         if (energy < 0):
-            log.msg('Moving from IDLE to DEMAND')
+            log.msg('Moving from START to DEMAND')
             self.protocol.factory.state = state.DEMAND
             self.protocol.transport.write(str(energy).encode())
         elif (energy > 0):
-            log.msg('Moving from IDLE to SUPPLY')
+            log.msg('Moving from START to SUPPLY')
             self.protocol.factory.state = state.SUPPLY
             self.protocol.transport.write(str(energy).encode())
         else:
-            log.msg('Remain in IDLE state')
-
+            log.msg('Return to IDLE state')
+            self.protocol.factory.state = state.IDLE
 
     def demandState(self):
         log.msg('Moving from DEMAND to RECEIVE')

@@ -8,10 +8,9 @@ HOST = 'localhost'
 PORT = 9000
 
 if __name__ == '__main__':
-    energy = sys.argv[1]
     log.startLogging(sys.stdout)
     log.msg("Running Client")
-    factory = ECFactory(energy)
+    factory = ECFactory()
     reactor.connectTCP(HOST, PORT, factory)
 
     reactor.run()

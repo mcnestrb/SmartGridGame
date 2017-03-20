@@ -7,8 +7,8 @@ from EnumEC import ECState as state
 from ECProtocol import ECProtocol
 
 class ECFactory(ClientFactory):
-    def __init__(self, energy):
-        self.energy = energy
+    def __init__(self):
+        self.energy = 0
         self.state = state.NOT_CONNECTED
 
     def startedConnecting(self, connector):

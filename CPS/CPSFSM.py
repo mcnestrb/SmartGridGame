@@ -5,7 +5,16 @@ class CPSFSM():
     def __init__(self, protocol):
         self.protocol = protocol
 
-    def idleState(self, data, peer):
+    def idleState(self):
+        start = input('Do you want to start? y/n\n')
+        if (start == 'y'):
+            log.msg('Moving from IDLE to START')
+            self.protocol.factory.state = state.START
+            data = 'Timeslot: {}'.format(14)
+            for EC in list(self.protocol.factory.ECs):
+                self.protocol.factory.ECs[EC].transport.write(data.encode())
+
+    def startState(self, data, peer):
         energy = int(data)
         if (peer in self.protocol.factory.ECs):
             if ( energy > 0 ):
@@ -23,14 +32,10 @@ class CPSFSM():
         absent = self.protocol.factory.absent
         ECs = self.protocol.factory.ECs
         if (len(ECs) == len(bidders) + len(suppliers) + len(absent)):
-            start = input('Do you want to start? y/n\n')
-            if (start == 'y'):
-                log.msg('Moving from IDLE to START')
-                self.protocol.factory.state = state.START
-
-    def startState(self):
-        log.msg('Moving from START to INIT')
-        self.protocol.factory.state = state.INIT
+            log.msg('All bidders: {}'.format(bidders))
+            log.msg('All suppliers: {}'.format(suppliers))
+            log.msg('Moving from START to INIT')
+            self.protocol.factory.state = state.INIT
 
     def initState(self):
         log.msg('Moving from INIT to OPT')
