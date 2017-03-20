@@ -23,21 +23,23 @@ class CPSFSM():
         absent = self.protocol.factory.absent
         ECs = self.protocol.factory.ECs
         if (len(ECs) == len(bidders) + len(suppliers) + len(absent)):
-            log.msg('Moving from IDLE to START')
-            self.protocol.factory.state = state.START
+            start = input('Do you want to start? y/n\n')
+            if (start == 'y'):
+                log.msg('Moving from IDLE to START')
+                self.protocol.factory.state = state.START
 
-    def startState():
+    def startState(self):
         log.msg('Moving from START to INIT')
         self.protocol.factory.state = state.INIT
 
-    def initState():
+    def initState(self):
         log.msg('Moving from INIT to OPT')
         self.protocol.factory.state = state.OPT
 
-    def optState():
+    def optState(self):
         log.msg('Moving from OPT to DISTRIBUTE')
         self.protocol.factory.state = state.DISTRIBUTE
 
-    def distributeState():
+    def distributeState(self):
         log.msg('Moving from DISTRIBUTE to IDLE')
         self.protocol.factory.state = state.IDLE
