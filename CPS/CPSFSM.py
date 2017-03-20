@@ -37,7 +37,23 @@ class CPSFSM():
             log.msg('Moving from START to INIT')
             self.protocol.factory.state = state.INIT
 
-    def initState(self):
+            Edef = 0
+            for key in bidders:
+                Edef -= bidders[key]
+            N = len(suppliers)
+            self.initState(Edef, N)
+
+    def initState(self, Edef, N):
+        p = 10
+        log.msg('P:{}'.format(p))
+        log.msg('Edef:{}'.format(Edef))
+        log.msg('N:{}'.format(N))
+
+        data = 'P: %s, Edef: %s, N: %s' % (p, Edef, N)
+
+        for supplier in list(self.protocol.factory.suppliers):
+            self.protocol.factory.ECs[supplier].transport.write(data.encode())
+
         log.msg('Moving from INIT to OPT')
         self.protocol.factory.state = state.OPT
 
