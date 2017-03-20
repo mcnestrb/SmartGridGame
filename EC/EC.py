@@ -2,7 +2,7 @@ import sys
 from twisted.python import log
 from twisted.internet import reactor
 
-import ECFactory
+from ECFactory import ECFactory
 
 HOST = 'localhost'
 PORT = 9000

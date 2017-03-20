@@ -1,7 +1,7 @@
 from twisted.internet.protocol import Protocol
 from twisted.python import log
 
-import CPSFSM as FSM
+from CPSFSM import CPSFSM as FSM
 from EnumCPS import CPSState as state
 
 class CPSProtocol(Protocol):

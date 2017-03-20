@@ -5,7 +5,7 @@ class CPSFSM():
     def __init__(self, protocol):
         self.protocol = protocol
 
-    def idleState(data, peer):
+    def idleState(self, data, peer):
         energy = int(data)
         if (peer in self.protocol.factory.ECs):
             if ( energy > 0 ):
@@ -17,6 +17,7 @@ class CPSFSM():
         else:
             log.msg('Error peer not connected')
 
+        # if all connected ECs have declared their energy then the game begins
         bidders = self.protocol.factory.bidders
         suppliers = self.protocol.factory.suppliers
         absent = self.protocol.factory.absent
@@ -24,7 +25,6 @@ class CPSFSM():
         if (len(ECs) == len(bidders) + len(suppliers) + len(absent)):
             log.msg('Moving from IDLE to START')
             self.protocol.factory.state = state.START
-
 
     def startState():
         log.msg('Moving from START to INIT')

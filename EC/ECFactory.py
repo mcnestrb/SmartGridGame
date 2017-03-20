@@ -4,7 +4,7 @@ from twisted.python import log
 import ECFSM as FSM
 from EnumEC import ECState as state
 
-import ECProtocol
+from ECProtocol import ECProtocol
 
 class ECFactory(ClientFactory):
     def __init__(self, energy):

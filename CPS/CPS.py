@@ -2,7 +2,7 @@ import sys
 from twisted.python import log
 from twisted.internet import reactor
 
-import CPSFactory
+from CPSFactory import CPSFactory
 
 PORT = 9000
 

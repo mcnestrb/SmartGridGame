@@ -5,7 +5,7 @@ class ECFSM():
     def __init__(self, protocol):
         self.protocol = protocol
 
-    def idleState(energy):
+    def idleState(self, energy):
         if (energy < 0):
             log.msg('Moving from IDLE to DEMAND')
             self.protocol.factory.state = state.DEMAND
@@ -13,7 +13,7 @@ class ECFSM():
         elif (energy > 0):
             log.msg('Moving from IDLE to SUPPLY')
             self.protocol.factory.state = state.SUPPLY
-            self.protocol.transport.write(energy.encode())
+            self.protocol.transport.write(str(energy).encode())
         else:
             log.msg('Remain in IDLE state')
 
