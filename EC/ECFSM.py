@@ -15,30 +15,28 @@ class ECFSM():
         string = 'What\'s your energy for %s\n' % (data.decode())
         energy = int(input(string))
         if (energy < 0):
-            log.msg('Moving from START to DEMAND')
-            self.protocol.factory.state = state.DEMAND
+            log.msg('Moving from START to RECEIVE')
+            self.protocol.factory.state = state.RECEIVE
             self.protocol.transport.write(str(energy).encode())
         elif (energy > 0):
-            log.msg('Moving from START to SUPPLY')
-            self.protocol.factory.state = state.SUPPLY
+            log.msg('Moving from START to EST_1')
+            self.protocol.factory.state = state.EST_1
             self.protocol.transport.write(str(energy).encode())
         else:
             log.msg('Return to IDLE state')
             self.protocol.factory.state = state.IDLE
 
-    def demandState(self):
-        log.msg('Moving from DEMAND to RECEIVE')
-        self.protocol.factory.state = state.RECEIVE
-
-    def supplyState(self):
-        log.msg('Moving from SUPPLY to EST_1')
-        self.protocol.factory.state = state.EST_1
-
-    def est1State(self):
+    def est1State(self, data):
+        log.msg('{}'.format(data.decode()))
+        lis = data.decode().strip().split(',')
+        p = lis[0].strip().split(':')[1]
+        Edef = lis[1].strip().split(':')[1]
+        N = lis[2].strip().split(':')[1]
+        log.msg('P is %s and Edef is %s and N is %s' % (p, Edef, N))
         log.msg('Moving from EST_1 to EST_2')
         self.protocol.factory.state = state.EST_2
 
-    def est2State(self):
+    def est2State(self, data):
         log.msg('Moving from EST_2 to IDLE')
         self.protocol.factory.state = state.IDLE
 

@@ -15,12 +15,8 @@ class ECProtocol(Protocol):
     def dataReceived(self, data):
         if (self.factory.state == state.IDLE):
             self.FSM.idleState(data)
-        elif (self.factory.state == state.DEMAND):
-            self.FSM.demandState()
-        elif (self.factory.state == state.SUPPLY):
-            self.FSM.supplyState()
         elif (self.factory.state == state.EST_1):
-            self.FSM.est1State()
+            self.FSM.est1State(data)
         elif (self.factory.state == state.EST_2):
             self.FSM.est2State()
         elif (self.factory.state == state.RECEIVE):
