@@ -29,10 +29,10 @@ class ECFSM():
     def est1State(self, data):
         log.msg('{}'.format(data.decode()))
         lis = data.decode().strip().split(',')
-        p = lis[0].strip().split(':')[1]
-        Edef = lis[1].strip().split(':')[1]
-        N = lis[2].strip().split(':')[1]
-        log.msg('P is %s and Edef is %s and N is %s' % (p, Edef, N))
+        P = lis[0].split(':')[1].strip()
+        Edef = lis[1].split(':')[1].strip()
+        N = lis[2].split(':')[1].strip()
+        log.msg('P is %s and Edef is %s and N is %s' % (P, Edef, N))
         log.msg('Moving from EST_1 to EST_2')
         self.protocol.factory.state = state.EST_2
 

@@ -44,12 +44,12 @@ class CPSFSM():
             self.initState(Edef, N)
 
     def initState(self, Edef, N):
-        p = 10
-        log.msg('P:{}'.format(p))
+        P = 10
+        log.msg('P:{}'.format(P))
         log.msg('Edef:{}'.format(Edef))
         log.msg('N:{}'.format(N))
 
-        data = 'P: %s, Edef: %s, N: %s' % (p, Edef, N)
+        data = 'P: %s, Edef: %s, N: %s' % (P, Edef, N)
 
         for supplier in list(self.protocol.factory.suppliers):
             self.protocol.factory.ECs[supplier].transport.write(data.encode())
