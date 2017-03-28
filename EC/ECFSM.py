@@ -33,15 +33,14 @@ class ECFSM():
         lis = data.decode().strip().split(',')
         P = lis[0].split(':')[1].strip()
         Edef = lis[1].split(':')[1].strip()
-        N = lis[2].split(':')[1].strip()
-        log.msg('P is %s and Edef is %s and N is %s' % (P, Edef, N))
-        priceEst = int(P) / int(N)
-        mySSHPM = SSHPM(1, self.En ,price)
+        log.msg('Price is %s and Edef is %s' % (P, Edef))
+        priceEst = float(P)
+        mySSHPM = SSHPM(1, self.En, P)
         energy_est = mySSHPM.solve()
         if (energy_est['EMES']) {
             log.msg('Moving from EST_1 to EST_2')
             self.protocol.factory.state = state.EST_2
-            self.protocol.transport.write(str(energy_est['EMES']).enode())
+            self.protocol.transport.write(str(energy_est['EMES']).encode())
         } elif (energy_est['NO EMES']) {
             log.msg('Staying in EST_1')
             self.protocol.transport.write(str(energy_est['NO EMES']).encode())

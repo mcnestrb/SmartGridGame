@@ -12,8 +12,11 @@ class CPSFactory(ServerFactory):
         self.absent = {}
         self.Edef = 0
         self.N = 0
+        self.pricePerUnit = 0
         self.P = 0
+        self.initPrice = 0
         self.offers = {}
+        self.prices = {}
 
     def buildProtocol(self, addr):
         return CPSProtocol(self)

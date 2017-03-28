@@ -45,38 +45,47 @@ class CPSFSM():
             self.initState()
 
     def initState(self):
-        self.protocol.factory.P = 10
-        log.msg('P:{}'.format(self.protocol.factory.P))
-        log.msg('Edef:{}'.format(self.protocol.factory.Edef))
-        log.msg('N:{}'.format(self.protocol.factory.N))
+        self.protocol.factory.pricePerUnit = 5
+        log.msg('Price per Unit: {}'.format(self.protocol.factory.P))
+        log.msg('Edef: {}'.format(self.protocol.factory.Edef))
+        log.msg('N: {}'.format(self.protocol.factory.N))
 
-        data = 'P: %s, Edef: %s, N: %s' % (self.protocol.factory.P, self.protocol.factory.Edef, self.protocol.factory.N)
+        self.protocol.factory.P = self.protocol.factory.Edef * self.protocol.factory.pricePerUnit
 
+        data = 'Price: %s, Edef: %s' % (self.protocol.factory.P, self.protocol.factory.Edef)
+
+        self.protocol.factory.initPrice = P / N
         for supplier in list(self.protocol.factory.suppliers):
+            self.protocol.factory.prices[supplier] = self.protocol.factory.initPrice
             self.protocol.factory.ECs[supplier].transport.write(data.encode())
 
-        log.msg('Moving from INIT to OPT')
-        self.protocol.factory.state = state.OPT
+        log.msg('Moving from INIT to GAME')
+        self.protocol.factory.state = state.GAME
 
-    def optState(self, data, peer):
+    def gameState(self, data, peer):
         offer = float(data.decode())
         self.protocol.factory.offers[peer] = offer
         if ( len(self.protocol.factory.offers) == len(self.protocol.factory.suppliers) ):
             total_offer = 0
             for key in self.protocol.factory.offers:
                 total_offer += self.protocol.factory.offers[key]
+
             if (total_offer >= self.protocol.factory.Edef):
-                # DO THE OPT THINGY
                 log.msg('Moving from OPT to DISTRIBUTE')
                 self.protocol.factory.state = state.DISTRIBUTE
             else:
-                data = 'P: %s, Edef: %s, N: %s' % (self.protocol.factory.P, self.protocol.factory.Edef, self.protocol.factory.N)
-
-                for supplier in list(self.protocol.factory.suppliers):
-                    self.protocol.factory.ECs[supplier].transport.write(data.encode())
-
                 log.msg('Staying in OPT state')
+
+            data = 'Price: %s, Edef: %s' % (self.protocol.factory.initPrice, self.protocol.factory.Edef)
+
+            for supplier in list(self.protocol.factory.suppliers):
+                self.protocol.factory.ECs[supplier].transport.write(data.encode())
+
+    def optState(self, data, peer):
+
 
     def distributeState(self):
         log.msg('Moving from DISTRIBUTE to IDLE')
         self.protocol.factory.state = state.IDLE
+
+    def utility()
