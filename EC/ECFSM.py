@@ -4,6 +4,7 @@ from EnumEC import ECState as state
 class ECFSM():
     def __init__(self, protocol):
         self.protocol = protocol
+        self.En = 0
 
     def idleState(self, data):
         if ('Timeslot' in str(data)):
@@ -20,6 +21,7 @@ class ECFSM():
             self.protocol.transport.write(str(energy).encode())
         elif (energy > 0):
             log.msg('Moving from START to EST_1')
+            self.En = energy
             self.protocol.factory.state = state.EST_1
             self.protocol.transport.write(str(energy).encode())
         else:
@@ -33,8 +35,17 @@ class ECFSM():
         Edef = lis[1].split(':')[1].strip()
         N = lis[2].split(':')[1].strip()
         log.msg('P is %s and Edef is %s and N is %s' % (P, Edef, N))
-        log.msg('Moving from EST_1 to EST_2')
-        self.protocol.factory.state = state.EST_2
+        priceEst = int(P) / int(N)
+        mySSHPM = SSHPM(1, self.En ,price)
+        energy_est = mySSHPM.solve()
+        if (energy_est['EMES']) {
+            log.msg('Moving from EST_1 to EST_2')
+            self.protocol.factory.state = state.EST_2
+            self.protocol.transport.write(str(energy_est['EMES']).enode())
+        } elif (energy_est['NO EMES']) {
+            log.msg('Staying in EST_1')
+            self.protocol.transport.write(str(energy_est['NO EMES']).encode())
+        }
 
     def est2State(self, data):
         log.msg('Moving from EST_2 to IDLE')

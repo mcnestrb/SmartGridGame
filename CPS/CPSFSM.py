@@ -41,15 +41,16 @@ class CPSFSM():
             for key in bidders:
                 Edef -= bidders[key]
             N = len(suppliers)
-            self.initState(Edef, N)
+            self.protocol.factory.Edef = Edef
+            self.initState()
 
-    def initState(self, Edef, N):
-        P = 10
-        log.msg('P:{}'.format(P))
-        log.msg('Edef:{}'.format(Edef))
-        log.msg('N:{}'.format(N))
+    def initState(self):
+        self.protocol.factory.P = 10
+        log.msg('P:{}'.format(self.protocol.factory.P))
+        log.msg('Edef:{}'.format(self.protocol.factory.Edef))
+        log.msg('N:{}'.format(self.protocol.factory.N))
 
-        data = 'P: %s, Edef: %s, N: %s' % (P, Edef, N)
+        data = 'P: %s, Edef: %s, N: %s' % (self.protocol.factory.P, self.protocol.factory.Edef, self.protocol.factory.N)
 
         for supplier in list(self.protocol.factory.suppliers):
             self.protocol.factory.ECs[supplier].transport.write(data.encode())
@@ -57,9 +58,24 @@ class CPSFSM():
         log.msg('Moving from INIT to OPT')
         self.protocol.factory.state = state.OPT
 
-    def optState(self):
-        log.msg('Moving from OPT to DISTRIBUTE')
-        self.protocol.factory.state = state.DISTRIBUTE
+    def optState(self, data, peer):
+        offer = float(data.decode())
+        self.protocol.factory.offers[peer] = offer
+        if ( len(self.protocol.factory.offers) == len(self.protocol.factory.suppliers) ):
+            total_offer = 0
+            for key in self.protocol.factory.offers:
+                total_offer += self.protocol.factory.offers[key]
+            if (total_offer >= self.protocol.factory.Edef):
+                # DO THE OPT THINGY
+                log.msg('Moving from OPT to DISTRIBUTE')
+                self.protocol.factory.state = state.DISTRIBUTE
+            else:
+                data = 'P: %s, Edef: %s, N: %s' % (self.protocol.factory.P, self.protocol.factory.Edef, self.protocol.factory.N)
+
+                for supplier in list(self.protocol.factory.suppliers):
+                    self.protocol.factory.ECs[supplier].transport.write(data.encode())
+
+                log.msg('Staying in OPT state')
 
     def distributeState(self):
         log.msg('Moving from DISTRIBUTE to IDLE')

@@ -10,6 +10,10 @@ class CPSFactory(ServerFactory):
         self.suppliers = {}
         self.bidders = {}
         self.absent = {}
+        self.Edef = 0
+        self.N = 0
+        self.P = 0
+        self.offers = {}
 
     def buildProtocol(self, addr):
         return CPSProtocol(self)

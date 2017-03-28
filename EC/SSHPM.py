@@ -7,16 +7,25 @@ class SSHPM():
         self.sigma = 0.5
         self.price = price
         self.en = en
+        self.min = 0
+        self.max = En
         self.En = En
 
     def solve(self):
         remainder = getRemainder()
         if (remainder == 0):
-
+            z = getHyperplanePoint(remainder)
+            next_en = getEstFromHalfSpace(z)
+            self.en = next_en
+            return {'EMES': self.En - 2 * self.caution * self.en + self.price}
         else:
-            z = getHyperplane(remainder)
+            z = getHyperplanePoint(remainder)
+            next_en = getEstFromHalfSpace(z)
+            curr_en = self.en
+            self.en = next_en
+            return {'NO EMES': self.En - curr_en + self.price}
 
-    def getHyperplane(self, remainder):
+    def getHyperplanePoint(self, remainder):
         k = getK(1, remainder)
         log.msg('{}'.format(k))
         eta = self.gamma ** k
@@ -29,17 +38,25 @@ class SSHPM():
             return right
         return getK(k+1, remainder)
 
-    def getHalfSpace(self):
-
+    def getEstFromHalfSpace(self, z):
+        if (z > self.en):
+            self.min = z
+        elif (z < self.en):
+            self.max = z
+        return (self.max + self.min) / 2
 
     def getRemainder(self):
-        temp = self.en - utility(self.en, self.En, self.price)
-        y = temp
-        if (temp < 0):
-            y = 0
-        elif (temp > self.En):
-            y = self.En
+        temp = self.en - utility(self.en, self.max, self.price)
+        y = getPC(temp)
         return self.en - y
 
-    def utility(self, en, En, pn):
+    def getPC(self, x):
+        y = x
+        if (x < self.min):
+            y = self.min
+        elif (x > self.max):
+            y = self.max
+        return y
+
+    def utility(self, en, En, price):
         return price * en + (En - self.caution * en) * en
