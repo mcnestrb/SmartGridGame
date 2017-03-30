@@ -1,5 +1,11 @@
-from twisted.python import log
 from EnumCPS import CPSState as state
+
+import numpy as np
+from cvxpy import *
+
+from twisted.python import log
+
+from collections import OrderedDict
 
 class CPSFSM():
     def __init__(self, protocol):
@@ -40,21 +46,23 @@ class CPSFSM():
             Edef = 0
             for key in bidders:
                 Edef -= bidders[key]
-            N = len(suppliers)
+            self.protocol.factory.N = len(suppliers)
             self.protocol.factory.Edef = Edef
             self.initState()
 
     def initState(self):
         self.protocol.factory.pricePerUnit = 5
-        log.msg('Price per Unit: {}'.format(self.protocol.factory.P))
+        log.msg('Price per Unit: {}'.format(self.protocol.factory.pricePerUnit))
         log.msg('Edef: {}'.format(self.protocol.factory.Edef))
         log.msg('N: {}'.format(self.protocol.factory.N))
 
         self.protocol.factory.P = self.protocol.factory.Edef * self.protocol.factory.pricePerUnit
+        self.protocol.factory.pn_max = self.protocol.factory.P
+        self.protocol.factory.initPrice = self.protocol.factory.P / self.protocol.factory.N
 
-        data = 'Price: %s, Edef: %s' % (self.protocol.factory.P, self.protocol.factory.Edef)
 
-        self.protocol.factory.initPrice = P / N
+        data = 'Initial - Price: %s, Edef: %s' % (self.protocol.factory.initPrice, self.protocol.factory.Edef)
+
         for supplier in list(self.protocol.factory.suppliers):
             self.protocol.factory.prices[supplier] = self.protocol.factory.initPrice
             self.protocol.factory.ECs[supplier].transport.write(data.encode())
@@ -66,26 +74,51 @@ class CPSFSM():
         offer = float(data.decode())
         self.protocol.factory.offers[peer] = offer
         if ( len(self.protocol.factory.offers) == len(self.protocol.factory.suppliers) ):
-            total_offer = 0
-            for key in self.protocol.factory.offers:
-                total_offer += self.protocol.factory.offers[key]
-
-            if (total_offer >= self.protocol.factory.Edef):
-                log.msg('Moving from OPT to DISTRIBUTE')
-                self.protocol.factory.state = state.DISTRIBUTE
+            ve = True
+            keys = list(self.protocol.factory.offers.keys())
+            curr_slack_var = self.protocol.factory.offers[keys[0]]
+            for key in keys[1:]:
+                if(curr_slack_var != self.protocol.factory.offers[key]):
+                    ve = False
+            if (ve):
+                log.msg('Moving from GAME to OPT')
+                self.protocol.factory.state = state.OPT
+                data = 'End'
             else:
-                log.msg('Staying in OPT state')
-
-            data = 'Price: %s, Edef: %s' % (self.protocol.factory.initPrice, self.protocol.factory.Edef)
+                log.msg('Staying in GAME state')
+                data = 'Price: %s, Edef: %s' % (self.protocol.factory.initPrice, self.protocol.factory.Edef)
 
             for supplier in list(self.protocol.factory.suppliers):
                 self.protocol.factory.ECs[supplier].transport.write(data.encode())
 
-    def optState(self, data, peer):
+            self.protocol.factory.offers = {}
 
+    def optState(self, data, peer):
+        offer = float(data.decode())
+        self.protocol.factory.offers[peer] = offer
+        if ( len(self.protocol.factory.offers) == len(self.protocol.factory.suppliers) ):
+            # Convex Optimisation
+
+            pn = Variable( len(self.protocol.factory.offers) )
+
+            # Get energy offers after first game and add them to a numpy array
+            arr = [self.protocol.factory.offers[offer] for offer in self.protocol.factory.offers]
+            en = np.array(arr)
+            r = 2
+            a = 1
+            b = 1
+
+            pn_min = self.protocol.factory.pn_min
+            pn_max = self.protocol.factory.pn_max
+            constraints = [pn_min <= pn, pn <= pn_max]
+
+            objective = Minimize(sum_entries( (en * (pn ** r)) + (a * pn) + b ) )
+
+            problem = Problem(objective, constraints)
+            problem.solve()
+            p_star = pn.value
+            log.msg('P STAR {}'.format(p_star))
 
     def distributeState(self):
         log.msg('Moving from DISTRIBUTE to IDLE')
         self.protocol.factory.state = state.IDLE
-
-    def utility()

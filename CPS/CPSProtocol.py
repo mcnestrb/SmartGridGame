@@ -13,7 +13,7 @@ class CPSProtocol(Protocol):
         peer = self.transport.getPeer()
         log.msg('Client connection from {}'.format(peer))
         self.factory.ECs.update({peer: self})
-        log.msg('All connection {}'.format(self.factory.ECs))
+        log.msg('All connections {}'.format(self.factory.ECs))
         self.FSM.idleState()
 
     def dataReceived(self, data):
@@ -23,7 +23,7 @@ class CPSProtocol(Protocol):
         elif (self.factory.state == state.GAME):
             self.FSM.gameState(data, peer)
         elif (self.factory.state == state.OPT):
-            self.FSM.optState(data, peer):
+            self.FSM.optState(data, peer)
         elif (self.factory.state == state.DISTRIBUTE):
             self.FSM.distributeState()
 

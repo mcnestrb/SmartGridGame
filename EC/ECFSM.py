@@ -1,10 +1,13 @@
 from twisted.python import log
 from EnumEC import ECState as state
 
+from SSHPM import SSHPM
+
 class ECFSM():
     def __init__(self, protocol):
         self.protocol = protocol
         self.En = 0
+        self.mySSHPM = SSHPM(0,0,0)
 
     def idleState(self, data):
         if ('Timeslot' in str(data)):
@@ -29,22 +32,22 @@ class ECFSM():
             self.protocol.factory.state = state.IDLE
 
     def est1State(self, data):
-        log.msg('{}'.format(data.decode()))
-        lis = data.decode().strip().split(',')
-        P = lis[0].split(':')[1].strip()
-        Edef = lis[1].split(':')[1].strip()
-        log.msg('Price is %s and Edef is %s' % (P, Edef))
-        priceEst = float(P)
-        mySSHPM = SSHPM(1, self.En, P)
-        energy_est = mySSHPM.solve()
-        if (energy_est['EMES']) {
+        dedata = data.decode()
+        if (dedata == 'End'):
             log.msg('Moving from EST_1 to EST_2')
             self.protocol.factory.state = state.EST_2
-            self.protocol.transport.write(str(energy_est['EMES']).encode())
-        } elif (energy_est['NO EMES']) {
-            log.msg('Staying in EST_1')
-            self.protocol.transport.write(str(energy_est['NO EMES']).encode())
-        }
+            self.protocol.transport.write(str(self.mySSHPM.final_en()).encode())
+        else:
+            log.msg('{}'.format(dedata))
+            lis = dedata.strip().split(',')
+            P = lis[0].split(':')[1].strip()
+            Edef = lis[1].split(':')[1].strip()
+            priceEst = float(P)
+
+            if ('Initial -' in dedata):
+                self.mySSHPM = SSHPM(self.En, self.En, priceEst)
+            energy_est = self.mySSHPM.solve()
+            self.protocol.transport.write(str(energy_est).encode())
 
     def est2State(self, data):
         log.msg('Moving from EST_2 to IDLE')

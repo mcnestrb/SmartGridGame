@@ -10,6 +10,7 @@ class ECFactory(ClientFactory):
     def __init__(self):
         self.energy = 0
         self.state = state.NOT_CONNECTED
+        log.msg('Not Connected')
 
     def startedConnecting(self, connector):
         log.msg('Started to connect...')
