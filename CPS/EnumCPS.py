@@ -4,6 +4,7 @@ class CPSState(Enum):
     IDLE = 1
     START = 2
     INIT = 3
-    GAME = 4
+    GAME_1 = 4
     OPT = 5
-    DISTRIBUTE = 6
+    GAME_2 = 6
+    DISTRIBUTE = 7

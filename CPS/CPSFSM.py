@@ -70,7 +70,7 @@ class CPSFSM():
         log.msg('Moving from INIT to GAME')
         self.protocol.factory.state = state.GAME
 
-    def gameState(self, data, peer):
+    def game1State(self, data, peer):
         offer = float(data.decode())
         self.protocol.factory.offers[peer] = offer
         if ( len(self.protocol.factory.offers) == len(self.protocol.factory.suppliers) ):
@@ -98,11 +98,13 @@ class CPSFSM():
         self.protocol.factory.offers[peer] = offer
         if ( len(self.protocol.factory.offers) == len(self.protocol.factory.suppliers) ):
             # Convex Optimisation
+            log.msg('Offers: {}'.format(self.protocol.factory.offers))
 
             pn = Variable( len(self.protocol.factory.offers) )
 
             # Get energy offers after first game and add them to a numpy array
             arr = [self.protocol.factory.offers[offer] for offer in self.protocol.factory.offers]
+            log.msg('Array of offers: {}'.format(arr))
             en = np.array(arr)
             r = 2
             a = 1
@@ -110,15 +112,37 @@ class CPSFSM():
 
             pn_min = self.protocol.factory.pn_min
             pn_max = self.protocol.factory.pn_max
-            constraints = [pn_min <= pn, pn <= pn_max]
+            constraints = [pn_min <= pn, pn <= pn_max, sum_entries(pn) == self.protocol.factory.P]
 
             objective = Minimize(sum_entries( (en * (pn ** r)) + (a * pn) + b ) )
 
             problem = Problem(objective, constraints)
             problem.solve()
-            p_star = pn.value
-            log.msg('P STAR {}'.format(p_star))
+            p_star = self.flatten_p_star(pn.value)
+
+            log.msg('P STAR: {}'.format(p_star))
+            log.msg('FIRST: {}'.format(p_star[0]))
+            log.msg('SECOND: {}'.format(p_star[1]))
+
+            i = 0
+            for key in self.protocol.factory.prices:
+                self.protocol.factory.prices[key] = p_star[i]
+                i += 1
+
+            log.msg('Moving from OPT to GAME_2')
+            self.protocol.factory.state = state.GAME_2
+            for supplier in list(self.protocol.factory.suppliers):
+                data = 'Updated price: {}'.format(self.protocol.factory.prices[supplier])
+                self.protocol.factory.ECs[supplier].transport.write(data.encode())
+
+    def game2State(self):
+        log.msg('Moving from GAME_2 to DISTRIBUTE')
+        self.protocol.factory.state = state.IDLE
 
     def distributeState(self):
         log.msg('Moving from DISTRIBUTE to IDLE')
         self.protocol.factory.state = state.IDLE
+
+    def flatten_p_star(self, p_star):
+        temp_list = p_star.flatten().tolist()
+        return [item for sublist in temp_list for item in sublist]

@@ -15,7 +15,7 @@ class CPSFactory(ServerFactory):
         self.N = 0
         self.pricePerUnit = 0
         self.P = 0.0
-        self.pn_max = 0.0
+        self.pn_max = 0.00
         self.pn_min = 8.50
         self.initPrice = 0
         self.offers = {}
