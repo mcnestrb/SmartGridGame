@@ -18,7 +18,7 @@ class ECProtocol(Protocol):
         elif (self.factory.state == state.EST_1):
             self.FSM.est1State(data)
         elif (self.factory.state == state.EST_2):
-            self.FSM.est2State()
+            self.FSM.est2State(data)
         elif (self.factory.state == state.RECEIVE):
             self.FSM.receiveState()
 

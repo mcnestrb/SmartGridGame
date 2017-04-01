@@ -20,10 +20,12 @@ class CPSProtocol(Protocol):
         peer = self.transport.getPeer()
         if (self.factory.state == state.START):
             self.FSM.startState(data, peer)
-        elif (self.factory.state == state.GAME):
-            self.FSM.gameState(data, peer)
+        elif (self.factory.state == state.GAME_1):
+            self.FSM.game1State(data, peer)
         elif (self.factory.state == state.OPT):
             self.FSM.optState(data, peer)
+        elif (self.factory.state == state.GAME_2):
+            self.FSM.game2State(data, peer)
         elif (self.factory.state == state.DISTRIBUTE):
             self.FSM.distributeState()
 

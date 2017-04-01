@@ -67,8 +67,8 @@ class CPSFSM():
             self.protocol.factory.prices[supplier] = self.protocol.factory.initPrice
             self.protocol.factory.ECs[supplier].transport.write(data.encode())
 
-        log.msg('Moving from INIT to GAME')
-        self.protocol.factory.state = state.GAME
+        log.msg('Moving from INIT to GAME_1')
+        self.protocol.factory.state = state.GAME_1
 
     def game1State(self, data, peer):
         offer = float(data.decode())
@@ -81,11 +81,11 @@ class CPSFSM():
                 if(curr_slack_var != self.protocol.factory.offers[key]):
                     ve = False
             if (ve):
-                log.msg('Moving from GAME to OPT')
+                log.msg('Moving from GAME_1 to OPT')
                 self.protocol.factory.state = state.OPT
                 data = 'End'
             else:
-                log.msg('Staying in GAME state')
+                log.msg('Staying in GAME_1 state')
                 data = 'Price: %s, Edef: %s' % (self.protocol.factory.initPrice, self.protocol.factory.Edef)
 
             for supplier in list(self.protocol.factory.suppliers):
@@ -131,11 +131,33 @@ class CPSFSM():
 
             log.msg('Moving from OPT to GAME_2')
             self.protocol.factory.state = state.GAME_2
+            self.protocol.factory.offers = {}
             for supplier in list(self.protocol.factory.suppliers):
                 data = 'Updated price: {}'.format(self.protocol.factory.prices[supplier])
                 self.protocol.factory.ECs[supplier].transport.write(data.encode())
 
-    def game2State(self):
+    def game2State(self, data, peer):
+        offer = float(data.decode())
+        self.protocol.factory.offers[peer] = offer
+        if ( len(self.protocol.factory.offers) == len(self.protocol.factory.suppliers) ):
+            ve = True
+            keys = list(self.protocol.factory.offers.keys())
+            curr_slack_var = self.protocol.factory.offers[keys[0]]
+            for key in keys[1:]:
+                if(curr_slack_var != self.protocol.factory.offers[key]):
+                    ve = False
+            if (ve):
+                log.msg('Moving from GAME_2 to OPT')
+                self.protocol.factory.state = state.OPT
+                data = 'End'
+            else:
+                log.msg('Staying in GAME_2 state')
+                data = 'Price: %s' % (self.protocol.factory.initPrice, self.protocol.factory.Edef)
+
+            for supplier in list(self.protocol.factory.suppliers):
+                self.protocol.factory.ECs[supplier].transport.write(data.encode())
+
+            self.protocol.factory.offers = {}
         log.msg('Moving from GAME_2 to DISTRIBUTE')
         self.protocol.factory.state = state.IDLE
 

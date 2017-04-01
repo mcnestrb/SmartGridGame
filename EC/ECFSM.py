@@ -50,6 +50,21 @@ class ECFSM():
             self.protocol.transport.write(str(energy_est).encode())
 
     def est2State(self, data):
+        dedata = data.decode()
+        if (dedata == 'End'):
+            log.msg('Moving from EST_2 to IDLE')
+            self.protocol.factory.state = state.IDLE
+            self.protocol.transport.write(str(self.mySSHPM.final_en()).encode())
+        else:
+            log.msg('{}'.format(dedata))
+            P = dedata.split(':')[1].strip()
+            priceEst = float(P)
+
+            if ('Updated price' in dedata):
+                self.mySSHPM = SSHPM(self.En, self.En, priceEst)
+            energy_est = self.mySSHPM.solve()
+            self.protocol.transport.write(str(energy_est).encode())
+
         log.msg('Moving from EST_2 to IDLE')
         self.protocol.factory.state = state.IDLE
 
