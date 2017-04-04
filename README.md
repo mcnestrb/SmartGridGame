@@ -10,3 +10,5 @@ Tushar, Wayes, et al. "Prioritizing consumers in smart grid: A game theoretic ap
 ## Framework
 
 Using Twisted framework for my Client and Server situation
+
+## Anaconda virual environment

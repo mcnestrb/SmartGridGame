@@ -14,6 +14,7 @@ class CPSProtocol(Protocol):
         log.msg('Client connection from {}'.format(peer))
         self.factory.ECs.update({peer: self})
         log.msg('All connections {}'.format(self.factory.ECs))
+        
         self.FSM.idleState()
 
     def dataReceived(self, data):
@@ -27,7 +28,7 @@ class CPSProtocol(Protocol):
         elif (self.factory.state == state.GAME_2):
             self.FSM.game2State(data, peer)
         elif (self.factory.state == state.DISTRIBUTE):
-            self.FSM.distributeState()
+            self.FSM.distributeState(data, peer)
 
     def connectionLost(self, reason):
         log.msg('Lost connection because {}'.format(reason))

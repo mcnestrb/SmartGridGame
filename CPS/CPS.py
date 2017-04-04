@@ -9,6 +9,7 @@ PORT = 9000
 if __name__ == '__main__':
     log.startLogging(sys.stdout)
     log.msg("Running Server")
-    factory = CPSFactory()
+    count = int(sys.argv[1])
+    factory = CPSFactory(count)
     reactor.listenTCP(PORT, factory)
     reactor.run()

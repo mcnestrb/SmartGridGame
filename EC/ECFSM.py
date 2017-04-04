@@ -16,8 +16,7 @@ class ECFSM():
             self.startState(data)
 
     def startState(self, data):
-        string = 'What\'s your energy for %s\n' % (data.decode())
-        energy = int(input(string))
+        energy = self.protocol.factory.energy
         if (energy < 0):
             log.msg('Moving from START to RECEIVE')
             self.protocol.factory.state = state.RECEIVE
@@ -47,7 +46,7 @@ class ECFSM():
             if ('Initial -' in dedata):
                 self.mySSHPM = SSHPM(self.En, self.En, priceEst)
             energy_est = self.mySSHPM.solve()
-            self.protocol.transport.write(str(energy_est).encode())
+            self.protocol.transport.write(("%.2f" % energy_est).encode())
 
     def est2State(self, data):
         dedata = data.decode()
@@ -63,10 +62,7 @@ class ECFSM():
             if ('Updated price' in dedata):
                 self.mySSHPM = SSHPM(self.En, self.En, priceEst)
             energy_est = self.mySSHPM.solve()
-            self.protocol.transport.write(str(energy_est).encode())
-
-        log.msg('Moving from EST_2 to IDLE')
-        self.protocol.factory.state = state.IDLE
+            self.protocol.transport.write(("%.2f" % energy_est).encode())
 
     def receiveState(self):
         log.msg('Moving from RECEIVE to IDLE')

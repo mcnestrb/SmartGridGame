@@ -5,7 +5,7 @@ from collections import OrderedDict
 from twisted.internet.protocol import ServerFactory
 
 class CPSFactory(ServerFactory):
-    def __init__(self):
+    def __init__(self, count):
         self.state = state.IDLE
         self.ECs = {}
         self.suppliers = {}
@@ -20,6 +20,7 @@ class CPSFactory(ServerFactory):
         self.initPrice = 0
         self.offers = {}
         self.prices = OrderedDict()
+        self.count = count
 
     def buildProtocol(self, addr):
         return CPSProtocol(self)

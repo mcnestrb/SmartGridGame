@@ -12,8 +12,8 @@ class CPSFSM():
         self.protocol = protocol
 
     def idleState(self):
-        start = input('Do you want to start? y/n\n')
-        if (start == 'y'):
+        if(self.protocol.factory.count == len(self.protocol.factory.ECs)):
+            start = input('All {} ECs are in the network\nDo you want to start?\n'.format(self.protocol.factory.count))
             log.msg('Moving from IDLE to START')
             self.protocol.factory.state = state.START
             data = 'Timeslot: {}'.format(14)
@@ -74,6 +74,7 @@ class CPSFSM():
         offer = float(data.decode())
         self.protocol.factory.offers[peer] = offer
         if ( len(self.protocol.factory.offers) == len(self.protocol.factory.suppliers) ):
+            log.msg('Slack Vars: {}'.format(self.protocol.factory.offers))
             ve = True
             keys = list(self.protocol.factory.offers.keys())
             curr_slack_var = self.protocol.factory.offers[keys[0]]
@@ -140,6 +141,7 @@ class CPSFSM():
         offer = float(data.decode())
         self.protocol.factory.offers[peer] = offer
         if ( len(self.protocol.factory.offers) == len(self.protocol.factory.suppliers) ):
+            log.msg('Slack Vars: {}'.format(self.protocol.factory.offers))
             ve = True
             keys = list(self.protocol.factory.offers.keys())
             curr_slack_var = self.protocol.factory.offers[keys[0]]
@@ -147,23 +149,25 @@ class CPSFSM():
                 if(curr_slack_var != self.protocol.factory.offers[key]):
                     ve = False
             if (ve):
-                log.msg('Moving from GAME_2 to OPT')
-                self.protocol.factory.state = state.OPT
+                log.msg('Moving from GAME_2 to DISTRIBUTE')
+                self.protocol.factory.state = state.DISTRIBUTE
                 data = 'End'
             else:
                 log.msg('Staying in GAME_2 state')
-                data = 'Price: %s' % (self.protocol.factory.initPrice, self.protocol.factory.Edef)
+                for supplier in list(self.protocol.factory.suppliers):
+                    data = 'Price: %s' % (self.protocol.factory.prices[supplier])
+                    self.protocol.factory.ECs[supplier].transport.write(data.encode())
 
-            for supplier in list(self.protocol.factory.suppliers):
-                self.protocol.factory.ECs[supplier].transport.write(data.encode())
 
             self.protocol.factory.offers = {}
-        log.msg('Moving from GAME_2 to DISTRIBUTE')
-        self.protocol.factory.state = state.IDLE
 
-    def distributeState(self):
-        log.msg('Moving from DISTRIBUTE to IDLE')
-        self.protocol.factory.state = state.IDLE
+    def distributeState(self, data, peer):
+        offer = float(data.decode())
+        self.protocol.factory.offers[peer] = offer
+        if ( len(self.protocol.factory.offers) == len(self.protocol.factory.suppliers) ):
+            log.msg('Offers: {}'.format(self.protocol.factory.offers))
+            log.msg('Moving from DISTRIBUTE to IDLE')
+            self.protocol.factory.state = state.IDLE
 
     def flatten_p_star(self, p_star):
         temp_list = p_star.flatten().tolist()
