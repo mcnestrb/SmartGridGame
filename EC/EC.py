@@ -11,7 +11,7 @@ if __name__ == '__main__':
     log.startLogging(sys.stdout)
     log.msg("Running Client")
     dummy = True
-    energy = -10
+    energy = -700
     with open(sys.argv[1]) as fp:
         for i, line in enumerate(fp):
             if i == int(sys.argv[2]):

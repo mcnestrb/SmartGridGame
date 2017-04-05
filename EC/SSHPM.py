@@ -4,8 +4,8 @@ from twisted.python import log
 class SSHPM():
     def __init__(self, en, En, price):
         self.caution = 0.5
-        self.gamma = 1
-        self.sigma = 0
+        self.gamma = 0.0001
+        self.sigma = 1
         self.price = price
         self.en = en
         self.min = 0
@@ -33,7 +33,7 @@ class SSHPM():
             return slack_var
 
     def getHyperplanePoint(self, residual):
-        k = self.getK(0, residual)
+        k = self.getK(1, residual)
         log.msg('K is {}'.format(k))
         eta = self.gamma ** k
         return self.en - eta * residual

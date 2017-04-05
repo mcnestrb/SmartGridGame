@@ -51,7 +51,7 @@ class CPSFSM():
             self.initState()
 
     def initState(self):
-        self.protocol.factory.pricePerUnit = 5
+        self.protocol.factory.pricePerUnit = 1.85
         log.msg('Price per Unit: {}'.format(self.protocol.factory.pricePerUnit))
         log.msg('Edef: {}'.format(self.protocol.factory.Edef))
         log.msg('N: {}'.format(self.protocol.factory.N))
@@ -138,6 +138,7 @@ class CPSFSM():
                 self.protocol.factory.ECs[supplier].transport.write(data.encode())
 
     def game2State(self, data, peer):
+        log.msg('Offer: {}'.format(data))
         offer = float(data.decode())
         self.protocol.factory.offers[peer] = offer
         if ( len(self.protocol.factory.offers) == len(self.protocol.factory.suppliers) ):
@@ -148,10 +149,13 @@ class CPSFSM():
             for key in keys[1:]:
                 if(curr_slack_var != self.protocol.factory.offers[key]):
                     ve = False
+
             if (ve):
                 log.msg('Moving from GAME_2 to DISTRIBUTE')
                 self.protocol.factory.state = state.DISTRIBUTE
                 data = 'End'
+                for supplier in list(self.protocol.factory.suppliers):
+                    self.protocol.factory.ECs[supplier].transport.write(data.encode())
             else:
                 log.msg('Staying in GAME_2 state')
                 for supplier in list(self.protocol.factory.suppliers):
