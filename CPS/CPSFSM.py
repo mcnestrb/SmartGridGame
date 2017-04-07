@@ -170,8 +170,14 @@ class CPSFSM():
         self.protocol.factory.offers[peer] = offer
         if ( len(self.protocol.factory.offers) == len(self.protocol.factory.suppliers) ):
             log.msg('Offers: {}'.format(self.protocol.factory.offers))
+            total_energy = sum(self.protocol.factory.offers.values())
+            log.msg('Need to buy {} kWh of energy from the central grid'.format(self.protocol.factory.Edef - total_energy))
+
             log.msg('Moving from DISTRIBUTE to IDLE')
             self.protocol.factory.state = state.IDLE
+            for bidder in list(self.protocol.factory.bidders):
+                data = str(self.protocol.factory.bidders[bidder])
+                self.protocol.factory.ECs[bidder].transport.write(data.encode())
 
     def flatten_p_star(self, p_star):
         temp_list = p_star.flatten().tolist()

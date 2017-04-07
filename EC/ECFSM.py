@@ -18,6 +18,7 @@ class ECFSM():
     def startState(self, data):
         energy = self.protocol.factory.energy
         if (energy < 0):
+            log.msg('Energy deficit: {}'.format(energy))
             log.msg('Moving from START to RECEIVE')
             self.protocol.factory.state = state.RECEIVE
             self.protocol.transport.write(str(energy).encode())
@@ -64,12 +65,19 @@ class ECFSM():
             P = dedata.split(':')[1].strip()
             priceEst = float(P)
 
-            self.protocol.transport.write("50.00".encode())
+            if(self.protocol.factory.energy == 1000):
+                self.mySSHPM.en = 394.8
+            elif(self.protocol.factory.energy == 1100):
+                self.mySSHPM.en = 305.2
+            self.protocol.transport.write(("%.2f" % 1347.50).encode())
             # if ('Updated price' in dedata):
             #     self.mySSHPM = SSHPM(self.En, self.En, priceEst)
             # energy_est = self.mySSHPM.solve()
             # self.protocol.transport.write(("%.2f" % energy_est).encode())
 
-    def receiveState(self):
+    def receiveState(self, data):
+        dedata = float(data.decode())
+        log.msg('Received: {}'.format(dedata))
+        self.protocol.factory.energy += dedata
         log.msg('Moving from RECEIVE to IDLE')
         self.protocol.factory.state = state.IDLE

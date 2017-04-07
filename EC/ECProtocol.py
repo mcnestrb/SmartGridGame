@@ -20,7 +20,7 @@ class ECProtocol(Protocol):
         elif (self.factory.state == state.EST_2):
             self.FSM.est2State(data)
         elif (self.factory.state == state.RECEIVE):
-            self.FSM.receiveState()
+            self.FSM.receiveState(data)
 
     def connectionLost(self, reason):
         log.msg('Lost connection because {}'.format(reason))
