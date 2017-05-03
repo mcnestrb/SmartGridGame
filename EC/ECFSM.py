@@ -44,11 +44,15 @@ class ECFSM():
             Edef = lis[1].split(':')[1].strip()
             priceEst = float(P)
 
+            # Hard coded values
             if(self.protocol.factory.energy == 1000):
                 self.mySSHPM.en = 300
             elif(self.protocol.factory.energy == 1100):
                 self.mySSHPM.en = 400
             self.protocol.transport.write(("%.2f" % 1347.50).encode())
+
+            # Actual code for game
+
             # if ('Initial -' in dedata):
             #     self.mySSHPM = SSHPM(self.En, self.En, priceEst)
             # energy_est = self.mySSHPM.solve()
@@ -65,11 +69,15 @@ class ECFSM():
             P = dedata.split(':')[1].strip()
             priceEst = float(P)
 
+            # Hard coded for game
             if(self.protocol.factory.energy == 1000):
                 self.mySSHPM.en = 394.8
             elif(self.protocol.factory.energy == 1100):
                 self.mySSHPM.en = 305.2
             self.protocol.transport.write(("%.2f" % 1347.50).encode())
+
+            # Actual code for game
+
             # if ('Updated price' in dedata):
             #     self.mySSHPM = SSHPM(self.En, self.En, priceEst)
             # energy_est = self.mySSHPM.solve()

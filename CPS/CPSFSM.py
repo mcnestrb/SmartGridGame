@@ -11,6 +11,7 @@ class CPSFSM():
     def __init__(self, protocol):
         self.protocol = protocol
 
+
     def idleState(self):
         if(self.protocol.factory.count == len(self.protocol.factory.ECs)):
             start = input('All {} ECs are in the network\nDo you want to start?\n'.format(self.protocol.factory.count))
@@ -100,7 +101,7 @@ class CPSFSM():
         if ( len(self.protocol.factory.offers) == len(self.protocol.factory.suppliers) ):
             # Convex Optimisation
             log.msg('Offers: {}'.format(self.protocol.factory.offers))
-
+            input()
             pn = Variable( len(self.protocol.factory.offers) )
 
             # Get energy offers after first game and add them to a numpy array
