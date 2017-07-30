@@ -12,7 +12,7 @@ Tushar, Wayes, et al. "Prioritizing consumers in smart grid: A game theoretic ap
 Using Twisted framework for my Client and Server situation
 
 ## Anaconda virual environment
-To run the code, an [https://uoa-eresearch.github.io/eresearch-cookbook/recipe/2014/11/20/conda/](Anaconda virtual environment) must be set up and the [http://www.cvxpy.org/en/latest/install/index.html](CVXPY library) must be installed.
+To run the code, an [Anaconda virtual environment](https://uoa-eresearch.github.io/eresearch-cookbook/recipe/2014/11/20/conda/) must be set up and the [CVXPY library](http://www.cvxpy.org/en/latest/install/index.html) must be installed.
 
 ## Running the system
 Once the virtual environment has been set up, it must be activate using 
